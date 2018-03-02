@@ -112,7 +112,10 @@ class OWTempHumSensor(polyinterface.Node):
     def updateInfo(self):
         temperature_c = self.device.read_float('temperature')
         temperature_f = (temperature_c * 9 / 5) + 32
-        humidity = self.device.read_float('humidity')
+        if 'HIH4000/humidity' in self.device.attrs:
+            humidity = self.device.read_float('HIH4000/humidity')
+        else:
+            humidity = self.device.read_float('humidity')
         self.setDriver('ST', temperature_c)
         self.setDriver('CLITEMP', temperature_f)
         self.setDriver('CLIHUM', humidity)
