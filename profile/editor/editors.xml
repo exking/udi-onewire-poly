@@ -1,0 +1,14 @@
+<editors>
+    <editor id="TEMPC">
+        <range uom="4" min="-200" max="200" prec="1" />
+    </editor>
+    <editor id="TEMPF">
+        <range uom="17" min="-200" max="200" prec="1" />
+    </editor>
+    <editor id="HUM">
+        <range uom="22" min="0" max="100" prec="0" />
+    </editor>
+    <editor id="UINT16">
+        <range uom="56" min="0" max="65535" prec="0" />
+    </editor>
+</editors>

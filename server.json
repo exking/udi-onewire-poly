@@ -1,0 +1,21 @@
+{
+    "name": "OneWire",
+    "docs": "https://github.com/exking/udi-onewire-poly",
+    "type": "python3",
+    "executable": "ow-poly.py",
+    "install": "install.sh",
+    "description": "OneWire NodeServer",
+    "notice": "",
+    "shortPoll": "15",
+    "longPoll": "60",
+    "credits": [
+        {
+            "title": "NodeServer to integrate with OneWire Bus",
+            "author": "xKing",
+            "version": "0.0.1",
+            "date": "February 25, 2018",
+            "source": "https://github.com/exking/udi-onewire-poly",
+            "license": "https://raw.githubusercontent.com/exking/udi-onewire-poly/master/LICENSE"
+        }
+    ]
+}

@@ -1,0 +1,41 @@
+<nodeDefs>
+    <nodeDef id="OWCTRL" nls="CTRL">
+        <editors />
+        <sts>
+            <st id="ST" editor="_2_0_R_0_1" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="DISCOVER" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+    <nodeDef id="OWTEMP" nls="OWT">
+        <editors />
+        <sts>
+            <st id="ST" editor="TEMPC" />
+            <st id="CLITEMP" editor="TEMPF" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="QUERY" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+    <nodeDef id="OWTEMPH" nls="OWT">
+        <editors />
+        <sts>
+            <st id="ST" editor="TEMPC" />
+            <st id="CLITEMP" editor="TEMPF" />
+            <st id="CLIHUM" editor="HUM" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="QUERY" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+</nodeDefs>

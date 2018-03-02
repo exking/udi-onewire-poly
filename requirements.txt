@@ -1,0 +1,2 @@
+polyinterface>=2.0.21
+onewire>=0.2

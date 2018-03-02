@@ -1,0 +1,16 @@
+# controller
+ND-OWCTRL-NAME = OneWire Controller
+ND-OWCTRL-ICON = Input
+CMD-CTRL-DISCOVER-NAME = Re-Discover
+ST-CTRL-ST-NAME = NodeServer Online
+
+# thermometer
+ND-OWTEMP-NAME = Temperature Sensor
+ND-OWTEMP-ICON = TempSensor
+ST-OWT-ST-NAME = Temp C
+ST-OWT-CLITEMP-NAME = Temp F
+ST-OWT-CLIHUM-NAME = Humidity
+
+# thermometer and humidity
+ND-OWTEMPH-NAME = Temp and Humidity
+ND-OWTEMPH-ICON = TempSensor
