@@ -7,6 +7,8 @@ from onewire import Onewire
 LOGGER = polyinterface.LOGGER
 
 
+DS18x20_PRECISION = ['temperature9', 'temperature10', 'temperature11', 'temperature12']
+
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):
         super().__init__(polyglot)
@@ -20,6 +22,10 @@ class Controller(polyinterface.Controller):
         LOGGER.info('Started OneWire controller')
         if 'precision' in self.polyConfig['customParams']:
             self.precision = int(self.polyConfig['customParams']['precision'])
+            if self.precision > 3:
+                self.precision = 3
+            elif self.precision < 0:
+                self.precision = 0
         if 'ow_conn' in self.polyConfig['customParams']:
             ow_conn = self.polyConfig['customParams']['ow_conn']
         else:
@@ -70,10 +76,10 @@ class OWTempSensor(polyinterface.Node):
         self.updateInfo()
 
     def updateInfo(self):
-        temperature_c = self.device.read_float('temperature')
+        temperature_c = self.device.read_float(DS18x20_PRECISION[self.controller.precision])
         temperature_f = (temperature_c * 9 / 5) + 32
-        self.setDriver('ST', round(temperature_c, self.controller.precision))
-        self.setDriver('CLITEMP', round(temperature_f, self.controller.precision))
+        self.setDriver('ST', temperature_c)
+        self.setDriver('CLITEMP', temperature_f)
 
     def query(self):
         self.updateInfo()
