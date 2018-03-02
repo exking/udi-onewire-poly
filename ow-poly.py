@@ -19,7 +19,7 @@ class Controller(polyinterface.Controller):
     def start(self):
         LOGGER.info('Started OneWire controller')
         if 'precision' in self.polyConfig['customParams']:
-            self.precision = self.polyConfig['customParams']['precision']
+            self.precision = int(self.polyConfig['customParams']['precision'])
         if 'ow_conn' in self.polyConfig['customParams']:
             ow_conn = self.polyConfig['customParams']['ow_conn']
         else:
