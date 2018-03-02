@@ -6,6 +6,8 @@ from onewire import Onewire
 
 LOGGER = polyinterface.LOGGER
 
+TEMP_PRECISION = 1
+
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):
         super().__init__(polyglot)
@@ -43,11 +45,11 @@ class Controller(polyinterface.Controller):
 
     def discover(self, command=None):
         for dev in self.ow.find():
-            address = dev.path.replace('.','')
+            address = dev.path.replace('.','').lower()[:14]
             name = dev.id
             family = int(dev.family)
             if not address in self.nodes:
-                if family == 28:
+                if family in [10, 28]:
                     self.addNode(OWTempSensor(self, self.address, address, name, dev))
                 else:
                     LOGGER.info('Sensor {} family {} is not yet supported'.format(name, family))
@@ -68,8 +70,8 @@ class OWTempSensor(polyinterface.Node):
     def updateInfo(self):
         temperature_c = self.device.read_float('temperature')
         temperature_f = (temperature_c * 9 / 5) + 32
-        self.setDriver('ST', round(temperature_c, 1))
-        self.setDriver('CLITEMP', round(temperature_f, 1))
+        self.setDriver('ST', round(temperature_c, TEMP_PRECISION))
+        self.setDriver('CLITEMP', round(temperature_f, TEMP_PRECISION))
 
     def query(self):
         self.updateInfo()
