@@ -14,3 +14,9 @@ ST-OWT-CLIHUM-NAME = Humidity
 # thermometer and humidity
 ND-OWTEMPH-NAME = Temp and Humidity
 ND-OWTEMPH-ICON = TempSensor
+
+# counter
+ND-OWCOUNT-NAME = Counter
+ND-OWCOUNT-ICON = Input
+ST-OWC-ST-NAME = Counter A
+ST-OWC-GV0-NAME = Counter B

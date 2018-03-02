@@ -55,10 +55,14 @@ class Controller(polyinterface.Controller):
         for dev in self.ow.find():
             address = dev.path.replace('.','').lower()[:14]
             name = dev.id
-            family = int(dev.family)
+            family = dev.family
             if not address in self.nodes:
-                if family in [10, 28]:
+                if family in ['10', '28']:
                     self.addNode(OWTempSensor(self, self.address, address, name, dev))
+                elif family == '26':
+                    self.addNode(OWTempHumSensor(self, self.address, address, name, dev))
+                elif family == '1D':
+                    self.addNode(OWCounter(self, self.address, address, name, dev))
                 else:
                     LOGGER.info('Sensor {} family {} is not yet supported'.format(name, family))
 
@@ -73,6 +77,7 @@ class OWTempSensor(polyinterface.Node):
         self.device = device
 
     def start(self):
+        LOGGER.debug('Starting {}, using {}'.format(self.device.id, DS18x20_PRECISION[self.controller.precision]))
         self.updateInfo()
 
     def updateInfo(self):
@@ -90,6 +95,67 @@ class OWTempSensor(polyinterface.Node):
               ]
 
     id = 'OWTEMP'
+
+    commands = {
+                    'QUERY': query
+               }
+
+
+class OWTempHumSensor(polyinterface.Node):
+    def __init__(self, controller, primary, address, name, device):
+        super().__init__(controller, primary, address, name)
+        self.device = device
+
+    def start(self):
+        self.updateInfo()
+
+    def updateInfo(self):
+        temperature_c = self.device.read_float('temperature')
+        temperature_f = (temperature_c * 9 / 5) + 32
+        humidity = self.device.read_float('humidity')
+        self.setDriver('ST', temperature_c)
+        self.setDriver('CLITEMP', temperature_f)
+        self.setDriver('CLIHUM', humidity)
+
+    def query(self):
+        self.updateInfo()
+        self.reportDrivers()
+
+    drivers = [{'driver': 'ST', 'value': 0, 'uom': 4},
+               {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
+               {'driver': 'CLIHUM', 'value': 0, 'uom': 22}
+              ]
+
+    id = 'OWTEMPH'
+
+    commands = {
+                    'QUERY': query
+               }
+
+
+class OWCounter(polyinterface.Node):
+    def __init__(self, controller, primary, address, name, device):
+        super().__init__(controller, primary, address, name)
+        self.device = device
+
+    def start(self):
+        self.updateInfo()
+
+    def updateInfo(self):
+        counterA = self.device.read_int('counters.A')
+        counterB = self.device.read_int('counters.B')
+        self.setDriver('ST', counterA)
+        self.setDriver('GV0', counterB)
+
+    def query(self):
+        self.updateInfo()
+        self.reportDrivers()
+
+    drivers = [{'driver': 'ST', 'value': 0, 'uom': 110},
+               {'driver': 'GV0', 'value': 0, 'uom': 110}
+              ]
+
+    id = 'OWCOUNT'
 
     commands = {
                     'QUERY': query

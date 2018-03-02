@@ -38,4 +38,17 @@
             </accepts>
         </cmds>
     </nodeDef>
+    <nodeDef id="OWCOUNT" nls="OWC">
+        <editors />
+        <sts>
+            <st id="ST" editor="UINT32" />
+            <st id="GV0" editor="UINT32" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="QUERY" />
+            </accepts>
+        </cmds>
+    </nodeDef>
 </nodeDefs>
