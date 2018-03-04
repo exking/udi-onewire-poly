@@ -2,5 +2,7 @@ language:
 - python
 python:
 - '3.6'
+before_script:
+- sudo apt-get install libow-dev
 script:
 - "./ow-poly.py"
