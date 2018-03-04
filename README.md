@@ -1,6 +1,7 @@
 # UDI Polyglot v2 OneWire Poly
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/exking/udi-gpio-poly/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/exking/udi-onewire-poly/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/exking/udi-onewire-poly.svg?branch=master)](https://travis-ci.org/exking/udi-onewire-poly)
 
 This Poly provides an interface between OneWire controller and [Polyglot v2](https://github.com/UniversalDevicesInc/polyglot-v2) server.
 
