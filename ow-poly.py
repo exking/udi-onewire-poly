@@ -2,6 +2,7 @@
 
 import polyinterface
 import sys
+import logging
 from onewire import Onewire
 
 LOGGER = polyinterface.LOGGER
@@ -17,8 +18,10 @@ class Controller(polyinterface.Controller):
         self.primary = self.address
         self.ow = None
         self.precision = 1
+        self.datalogger = None
 
     def start(self):
+        LOGGER.setLevel(logging.INFO)
         LOGGER.info('Started OneWire controller')
         if 'precision' in self.polyConfig['customParams']:
             self.precision = int(self.polyConfig['customParams']['precision'])
@@ -30,6 +33,13 @@ class Controller(polyinterface.Controller):
             ow_conn = self.polyConfig['customParams']['ow_conn']
         else:
             ow_conn = 'localhost:4304'
+        if 'logfile' in self.polyConfig['customParams']:
+            file_handler = logging.handlers.TimedRotatingFileHandler(self.polyConfig['customParams']['logfile'], when="midnight", backupCount=5)
+            formatter = logging.Formatter('%(asctime)s,%(message)s','%Y-%m-%d,%H:%M:%S')
+            file_handler.setFormatter(formatter)
+            self.datalogger = logging.getLogger('csvlog')
+            self.datalogger.setLevel(logging.DEBUG)
+            self.datalogger.addHandler(file_handler)
         try:
             self.ow = Onewire(ow_conn)
         except Exception as ex:
@@ -38,7 +48,7 @@ class Controller(polyinterface.Controller):
             self.discover()
 
     def stop(self):
-        LOGGER.debug('OneWire is stopping')
+        LOGGER.info('OneWire is stopping')
 
     def shortPoll(self):
         for node in self.nodes:
@@ -77,7 +87,7 @@ class OWTempSensor(polyinterface.Node):
         self.device = device
 
     def start(self):
-        LOGGER.debug('Starting {}, using {}'.format(self.device.id, DS18x20_PRECISION[self.controller.precision]))
+        LOGGER.info('Starting {}, using {}'.format(self.device.id, DS18x20_PRECISION[self.controller.precision]))
         self.updateInfo()
 
     def updateInfo(self):
@@ -85,6 +95,8 @@ class OWTempSensor(polyinterface.Node):
         temperature_f = (temperature_c * 9 / 5) + 32
         self.setDriver('ST', temperature_c)
         self.setDriver('CLITEMP', temperature_f)
+        if self.controller.datalogger is not None:
+            self.controller.datalogger.debug("{},{},{}".format(self.device.id,temperature_c,temperature_f))
 
     def query(self):
         self.updateInfo()
@@ -119,6 +131,8 @@ class OWTempHumSensor(polyinterface.Node):
         self.setDriver('ST', temperature_c)
         self.setDriver('CLITEMP', temperature_f)
         self.setDriver('CLIHUM', humidity)
+        if self.controller.datalogger is not None:
+            self.controller.datalogger.debug("{},{},{},{}".format(self.device.id,temperature_c,temperature_f,humidity))
 
     def query(self):
         self.updateInfo()
@@ -149,6 +163,8 @@ class OWCounter(polyinterface.Node):
         counterB = self.device.read_int('counters.B')
         self.setDriver('ST', counterA)
         self.setDriver('GV0', counterB)
+        if self.controller.datalogger is not None:
+            self.controller.datalogger.debug("{},{},{}".format(self.device.id,counterA,counterB))
 
     def query(self):
         self.updateInfo()

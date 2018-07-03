@@ -12,7 +12,7 @@
         {
             "title": "NodeServer to integrate with OneWire Bus",
             "author": "xKing",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "date": "February 25, 2018",
             "source": "https://github.com/exking/udi-onewire-poly",
             "license": "https://raw.githubusercontent.com/exking/udi-onewire-poly/master/LICENSE"
