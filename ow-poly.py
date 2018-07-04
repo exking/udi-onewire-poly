@@ -94,7 +94,7 @@ class OWTempSensor(polyinterface.Node):
         temperature_c = self.device.read_float(DS18x20_PRECISION[self.controller.precision])
         temperature_f = (temperature_c * 9 / 5) + 32
         self.setDriver('ST', temperature_c)
-        self.setDriver('CLITEMP', temperature_f)
+        self.setDriver('CLITEMP', round(temperature_f, 4))
         if self.controller.datalogger is not None:
             self.controller.datalogger.debug("{},{},{}".format(self.device.id,temperature_c,temperature_f))
 
@@ -129,7 +129,7 @@ class OWTempHumSensor(polyinterface.Node):
         else:
             humidity = self.device.read_float('humidity')
         self.setDriver('ST', temperature_c)
-        self.setDriver('CLITEMP', temperature_f)
+        self.setDriver('CLITEMP', round(temperature_f, 4))
         self.setDriver('CLIHUM', humidity)
         if self.controller.datalogger is not None:
             self.controller.datalogger.debug("{},{},{},{}".format(self.device.id,temperature_c,temperature_f,humidity))
