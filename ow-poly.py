@@ -91,7 +91,11 @@ class OWTempSensor(polyinterface.Node):
         self.updateInfo()
 
     def updateInfo(self):
-        temperature_c = self.device.read_float(DS18x20_PRECISION[self.controller.precision])
+        try:
+            temperature_c = self.device.read_float(DS18x20_PRECISION[self.controller.precision])
+        except Exception as ex:
+            LOGGER.error("Failed to read: {}".format(self.device.id))
+            return False
         temperature_f = (temperature_c * 9 / 5) + 32
         self.setDriver('ST', temperature_c)
         self.setDriver('CLITEMP', round(temperature_f, 4))
@@ -122,12 +126,24 @@ class OWTempHumSensor(polyinterface.Node):
         self.updateInfo()
 
     def updateInfo(self):
-        temperature_c = self.device.read_float('temperature')
+        try:
+            temperature_c = self.device.read_float('temperature')
+        except Exception as ex:
+            LOGGER.error("Failed to read: {}".format(self.device.id))
+            return False
         temperature_f = (temperature_c * 9 / 5) + 32
         if 'HIH4000/humidity' in self.device.attrs:
-            humidity = self.device.read_float('HIH4000/humidity')
+            try:
+                humidity = self.device.read_float('HIH4000/humidity')
+            except Exception as ex:
+                LOGGER.error("Failed to read: {}".format(self.device.id))
+                return False
         else:
-            humidity = self.device.read_float('humidity')
+            try:
+                humidity = self.device.read_float('humidity')
+            except Exception as ex:
+                LOGGER.error("Failed to read: {}".format(self.device.id))
+                return False
         self.setDriver('ST', temperature_c)
         self.setDriver('CLITEMP', round(temperature_f, 4))
         self.setDriver('CLIHUM', humidity)
@@ -159,8 +175,12 @@ class OWCounter(polyinterface.Node):
         self.updateInfo()
 
     def updateInfo(self):
-        counterA = self.device.read_int('counters.A')
-        counterB = self.device.read_int('counters.B')
+        try:
+            counterA = self.device.read_int('counters.A')
+            counterB = self.device.read_int('counters.B')
+        except Exception as ex:
+            LOGGER.error("Failed to read: {}".format(self.device.id))
+            return False
         self.setDriver('ST', counterA)
         self.setDriver('GV0', counterB)
         if self.controller.datalogger is not None:
