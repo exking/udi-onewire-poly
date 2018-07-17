@@ -19,6 +19,7 @@ class Controller(polyinterface.Controller):
         self.ow = None
         self.precision = 1
         self.datalogger = None
+        self.on = False
 
     def start(self):
         LOGGER.setLevel(logging.INFO)
@@ -53,6 +54,12 @@ class Controller(polyinterface.Controller):
     def shortPoll(self):
         for node in self.nodes:
             self.nodes[node].updateInfo()
+        if self.on:
+            self.reportCmd('DOF')
+            self.on = False
+        else:
+            self.reportCmd('DON')
+            self.on = True
             
     def updateInfo(self):
         pass
