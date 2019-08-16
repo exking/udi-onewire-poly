@@ -11,4 +11,7 @@
     <editor id="UINT32">
         <range uom="110" min="0" max="4294967295" prec="0" />
     </editor>
+    <editor id="UINT16">
+        <range uom="108" min="0" max="65535" prec="0" />
+    </editor>
 </editors>

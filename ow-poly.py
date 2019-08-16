@@ -20,6 +20,7 @@ class Controller(polyinterface.Controller):
         self.precision = 1
         self.datalogger = None
         self.on = False
+        self.sensor_count = 0
 
     def start(self):
         LOGGER.setLevel(logging.INFO)
@@ -47,6 +48,7 @@ class Controller(polyinterface.Controller):
             LOGGER.error('OneWire Initialization Exception: {}'.format(ex))
         else:
             self.discover()
+            self.setDriver('GPV', self.sensor_count)
 
     def stop(self):
         LOGGER.info('OneWire is stopping')
@@ -74,6 +76,7 @@ class Controller(polyinterface.Controller):
             name = dev.id
             family = dev.family
             if not address in self.nodes:
+                self.sensor_count += 1
                 if family in ['10', '28']:
                     self.addNode(OWTempSensor(self, self.address, address, name, dev))
                 elif family == '26':
@@ -85,21 +88,30 @@ class Controller(polyinterface.Controller):
 
     id = 'OWCTRL'
     commands = {'DISCOVER': discover}
-    drivers = [{'driver': 'ST', 'value': 1, 'uom': 2}]
+    drivers = [{'driver': 'ST', 'value': 1, 'uom': 2},
+               {'driver': 'GPV', 'value': 0, 'uom': 108}]
 
 
 class OWTempSensor(polyinterface.Node):
     def __init__(self, controller, primary, address, name, device):
         super().__init__(controller, primary, address, name)
         self.device = device
+        self.temp_correction = 0
 
     def start(self):
         LOGGER.info('Starting {}, using {}'.format(self.device.id, DS18x20_PRECISION[self.controller.precision]))
+        if self.device.id in self.controller.polyConfig['customParams']:
+            try:
+                self.temp_correction = float(self.controller.polyConfig['customParams'][self.device.id])
+            except Exception as ex:
+                LOGGER.error('Device {} correction value invalid: {}'.format(self.device.id, ex))
+            else:
+                LOGGER.info('Will apply {} correction to {}'.format(self.temp_correction, self.device.id))
         self.updateInfo()
 
     def updateInfo(self):
         try:
-            temperature_c = self.device.read_float(DS18x20_PRECISION[self.controller.precision])
+            temperature_c = self.device.read_float(DS18x20_PRECISION[self.controller.precision]) + self.temp_correction
         except Exception as ex:
             LOGGER.error("Failed to read: {}".format(self.device.id))
             return False
@@ -128,13 +140,22 @@ class OWTempHumSensor(polyinterface.Node):
     def __init__(self, controller, primary, address, name, device):
         super().__init__(controller, primary, address, name)
         self.device = device
+        self.temp_correction = 0
 
     def start(self):
+        LOGGER.info('Starting {}'.format(self.device.id))
+        if self.device.id in self.controller.polyConfig['customParams']:
+            try:
+                self.temp_correction = float(self.controller.polyConfig['customParams'][self.device.id])
+            except Exception as ex:
+                LOGGER.error('Device {} correction value invalid: {}'.format(self.device.id, ex))
+            else:
+                LOGGER.info('Will apply {} temperature correction to {}'.format(self.temp_correction, self.device.id))
         self.updateInfo()
 
     def updateInfo(self):
         try:
-            temperature_c = self.device.read_float('temperature')
+            temperature_c = self.device.read_float('temperature') + self.temp_correction
         except Exception as ex:
             LOGGER.error("Failed to read: {}".format(self.device.id))
             return False
@@ -179,6 +200,7 @@ class OWCounter(polyinterface.Node):
         self.device = device
 
     def start(self):
+        LOGGER.info('Starting {}'.format(self.device.id))
         self.updateInfo()
 
     def updateInfo(self):

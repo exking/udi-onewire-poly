@@ -3,6 +3,7 @@ ND-OWCTRL-NAME = OneWire Controller
 ND-OWCTRL-ICON = Input
 CMD-CTRL-DISCOVER-NAME = Re-Discover
 ST-CTRL-ST-NAME = NodeServer Online
+ST-CTRL-GPV-NAME = Sensor Count
 
 # thermometer
 ND-OWTEMP-NAME = Temperature Sensor
