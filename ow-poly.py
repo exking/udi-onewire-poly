@@ -97,29 +97,38 @@ class OWTempSensor(polyinterface.Node):
         super().__init__(controller, primary, address, name)
         self.device = device
         self.temp_correction = 0
+        self.temp_attribute = 'temperature'
 
     def start(self):
-        LOGGER.info('Starting {}, using {}'.format(self.device.id, DS18x20_PRECISION[self.controller.precision]))
+        self.temp_attribute = DS18x20_PRECISION[self.controller.precision]
+        LOGGER.info(f'Starting {self.device.id}, using {self.temp_attribute}')
         if self.device.id in self.controller.polyConfig['customParams']:
             try:
                 self.temp_correction = float(self.controller.polyConfig['customParams'][self.device.id])
             except Exception as ex:
-                LOGGER.error('Device {} correction value invalid: {}'.format(self.device.id, ex))
+                LOGGER.error(f'Device {self.device.id} correction value invalid: {ex}')
             else:
-                LOGGER.info('Will apply {} correction to {}'.format(self.temp_correction, self.device.id))
+                LOGGER.info(f'Will apply {self.temp_correction} correction to {self.device.id}')
+        try:
+            temperature_c = self.device.read_float(temp_attribute) + self.temp_correction
+        except AttributeError:
+            LOGGER.info(f'Failed to read {self.temp_attribute} of {self.device.id}, fallback to "temperature"')
+            self.temp_attribute = 'temperature'
+        except Exception as ex:
+            LOGGER.error(f'Failed to read: {self.device.id}: {ex}')
         self.updateInfo()
 
     def updateInfo(self):
         try:
-            temperature_c = self.device.read_float(DS18x20_PRECISION[self.controller.precision]) + self.temp_correction
+            temperature_c = self.device.read_float(self.temp_attribute) + self.temp_correction
         except Exception as ex:
-            LOGGER.error("Failed to read: {}".format(self.device.id))
+            LOGGER.error(f"Failed to read: {self.device.id}: {ex}")
             return False
         temperature_f = (temperature_c * 9 / 5) + 32
         self.setDriver('ST', temperature_c)
         self.setDriver('CLITEMP', round(temperature_f, 4))
         if self.controller.datalogger is not None:
-            self.controller.datalogger.debug("{},{},{}".format(self.device.id,temperature_c,temperature_f))
+            self.controller.datalogger.debug(f'{self.device.id},{temperature_c},{temperature_f}')
 
     def query(self):
         self.updateInfo()
