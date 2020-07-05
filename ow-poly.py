@@ -110,7 +110,7 @@ class OWTempSensor(polyinterface.Node):
             else:
                 LOGGER.info(f'Will apply {self.temp_correction} correction to {self.device.id}')
         try:
-            temperature_c = self.device.read_float(temp_attribute) + self.temp_correction
+            temperature_c = self.device.read_float(self.temp_attribute) + self.temp_correction
         except AttributeError:
             LOGGER.info(f'Failed to read {self.temp_attribute} of {self.device.id}, fallback to "temperature"')
             self.temp_attribute = 'temperature'
